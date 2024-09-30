@@ -67,7 +67,7 @@ builddockerimage() {
 build_all() {
     echo "build_all (ic, od, switchdnn)"
     builddockerimage
-    docker run --rm \
+    docker run -u $(id -u):$(id -g) --rm \
         -v $PWD/sdk/:$PWD/sdk/ \
         $NAME_IMAGE \
         /bin/sh -c "cd ${PWD}/sdk/sample && make ${BUILD_TYPE} ${DUMP_MEMORY_CONSUMPTION} && touch ${BUILD_STATE_FILE}"
@@ -76,7 +76,7 @@ build_all() {
 build_ic() {
     echo "build_ic"
     builddockerimage
-    docker run --rm \
+    docker run -u $(id -u):$(id -g) --rm \
         -v $PWD/sdk/:$PWD/sdk/ \
         $NAME_IMAGE \
         /bin/sh -c "cd ${PWD}/sdk/sample && make ${BUILD_TYPE} APPTYPE=ic ${DUMP_MEMORY_CONSUMPTION} && touch ${BUILD_STATE_FILE}"
@@ -85,7 +85,7 @@ build_ic() {
 build_od() {
     echo "build_od"
     builddockerimage
-    docker run --rm \
+    docker run -u $(id -u):$(id -g) --rm \
         -v $PWD/sdk/:$PWD/sdk/ \
         $NAME_IMAGE \
         /bin/sh -c "cd ${PWD}/sdk/sample && make ${BUILD_TYPE} APPTYPE=od ${DUMP_MEMORY_CONSUMPTION} && touch ${BUILD_STATE_FILE}"
@@ -94,7 +94,7 @@ build_od() {
 build_switch_dnn() {
     echo "build_switch_dnn"
     builddockerimage
-    docker run --rm \
+    docker run -u $(id -u):$(id -g) --rm \
         -v $PWD/sdk/:$PWD/sdk/ \
         $NAME_IMAGE \
         /bin/sh -c "cd ${PWD}/sdk/sample && make ${BUILD_TYPE} APPTYPE=switchdnn ${DUMP_MEMORY_CONSUMPTION} && touch ${BUILD_STATE_FILE}"
