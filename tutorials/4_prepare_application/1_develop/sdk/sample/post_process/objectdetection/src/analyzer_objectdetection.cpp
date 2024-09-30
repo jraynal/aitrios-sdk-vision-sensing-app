@@ -67,7 +67,7 @@ typedef struct tagPPL_Bbox {
 } PPL_Bbox;
 
 typedef struct tagObjectDetectionSsdData {
-    uint8_t numOfDetections = 0;
+    uint32_t numOfDetections = 0;
     std::vector<PPL_Bbox> v_bbox;
     std::vector<float> v_scores;
     std::vector<uint8_t> v_classes;
@@ -257,7 +257,7 @@ static EPPL_RESULT_CODE PPL_ObjectDetectionSsdParamInit(JSON_Value *root_value, 
         PPL_ERR_PRINTF("PPL_ObjectDetectionParamInit: json file does not have threshold");
         return E_PPL_INVALID_PARAM;
     }
-    
+
     pthread_mutex_lock(&g_libc_mutex);
     ret = json_object_has_value(json_object(root_value),"input_width");
     pthread_mutex_unlock(&g_libc_mutex);
@@ -305,7 +305,7 @@ static int createObjectDetectionSsdData(float *data_body, uint32_t detect_num, O
     std::vector<float> v_classes;
 
     /* Extract number of Detections */
-    uint8_t totalDetections = (uint8_t)detect_num;
+    uint32_t totalDetections = detect_num;
 
     if ((count + (totalDetections * 4))> PPL_DNN_OUTPUT_TENSOR_SIZE(detect_num)) {
         PPL_ERR_PRINTF("Invalid count index %d",count);
@@ -363,7 +363,7 @@ static int createObjectDetectionSsdData(float *data_body, uint32_t detect_num, O
     }
 
     //Extract number of Detections
-    uint8_t numOfDetections = (uint8_t) out_data[count];
+    uint32_t numOfDetections = out_data[count];
 
     if (numOfDetections > totalDetections) {
          PPL_WARN_PRINTF("Unexpected value for numOfDetections: %d, setting it to %d",numOfDetections,totalDetections);
@@ -392,17 +392,17 @@ static int createObjectDetectionSsdData(float *data_body, uint32_t detect_num, O
  */
 static void analyzeObjectDetectionSsdOutput(ObjectDetectionSsdOutputTensor out_tensor, ObjectDetectionSsdData *output_objectdetection_data, PPL_SsdParam ssd_param) {
 
-    uint8_t num_of_detections;
-    uint8_t detections_above_threshold = 0;
+    uint32_t num_of_detections;
+    uint32_t detections_above_threshold = 0;
     std::vector<PPL_Bbox> v_bbox;
     std::vector<float> v_scores;
     std::vector<uint8_t> v_classes;
     ObjectDetectionSsdData objectdetection_data;
 
     /* Extract number of detections */
-    num_of_detections = (uint8_t)out_tensor.numOfDetections;
+    num_of_detections = out_tensor.numOfDetections;
 
-    for (uint8_t i = 0; i < num_of_detections; i++) {
+    for (uint32_t i = 0u; i < num_of_detections; i++) {
 
         /* Extract scores */
         float score;
@@ -546,8 +546,8 @@ static void createSSDOutputFlatbuffer(flatbuffers::FlatBufferBuilder* builder, c
     std::vector<flatbuffers::Offset<SmartCamera::GeneralObject>> gdata_vector;
 
     PPL_DBG_PRINTF("createFlatbuffer");
-    uint8_t numOfDetections = ssdData->numOfDetections;
-    for (uint8_t i = 0; i < numOfDetections; i++) {
+    uint32_t numOfDetections = ssdData->numOfDetections;
+    for (uint32_t i = 0u; i < numOfDetections; i++) {
         PPL_DBG_PRINTF("left = %d, top = %d, right = %d, bottom = %d, class = %d, score = %f", ssdData->v_bbox[i].m_xmin, ssdData->v_bbox[i].m_ymin, ssdData->v_bbox[i].m_xmax, ssdData->v_bbox[i].m_ymax, ssdData->v_classes[i], ssdData->v_scores[i]);
         pthread_mutex_lock(&g_libc_mutex);
         auto bbox_data = SmartCamera::CreateBoundingBox2d(*builder, ssdData->v_bbox[i].m_xmin, \
