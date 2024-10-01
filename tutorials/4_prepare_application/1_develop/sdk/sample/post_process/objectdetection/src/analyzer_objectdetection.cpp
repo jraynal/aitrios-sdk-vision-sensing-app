@@ -313,7 +313,7 @@ static int createObjectDetectionSsdData(float *data_body, uint32_t detect_num, O
     }
 
     //Extract bounding box co-ordinates
-    for (uint8_t i = 0; i < totalDetections; i++) {
+    for (uint32_t i = 0; i < totalDetections; i++) {
         Bbox bbox;
         bbox.y_min = out_data[count + i];
         bbox.x_min = out_data[count + i + (1 * totalDetections)];
@@ -326,7 +326,7 @@ static int createObjectDetectionSsdData(float *data_body, uint32_t detect_num, O
     count += (totalDetections * 4);
 
     //Extract class indices
-    for (uint8_t i = 0; i < totalDetections; i++) {
+    for (uint32_t i = 0; i < totalDetections; i++) {
         if (count > PPL_DNN_OUTPUT_TENSOR_SIZE(detect_num)) {
             PPL_ERR_PRINTF("Invalid count index %d",count);
             return -1;
@@ -342,7 +342,7 @@ static int createObjectDetectionSsdData(float *data_body, uint32_t detect_num, O
     }
 
     //Extract scores
-    for (uint8_t i = 0; i < totalDetections; i++) {
+    for (uint32_t i = 0; i < totalDetections; i++) {
         if (count > PPL_DNN_OUTPUT_TENSOR_SIZE(detect_num)) {
             PPL_ERR_PRINTF("Invalid count index %d",count);
             return -1;
@@ -392,7 +392,6 @@ static int createObjectDetectionSsdData(float *data_body, uint32_t detect_num, O
  */
 static void analyzeObjectDetectionSsdOutput(ObjectDetectionSsdOutputTensor out_tensor, ObjectDetectionSsdData *output_objectdetection_data, PPL_SsdParam ssd_param) {
 
-    uint32_t num_of_detections;
     uint32_t detections_above_threshold = 0;
     std::vector<PPL_Bbox> v_bbox;
     std::vector<float> v_scores;
@@ -400,7 +399,8 @@ static void analyzeObjectDetectionSsdOutput(ObjectDetectionSsdOutputTensor out_t
     ObjectDetectionSsdData objectdetection_data;
 
     /* Extract number of detections */
-    num_of_detections = out_tensor.numOfDetections;
+    uint32_t num_of_detections;
+    num_of_detections = (uint32_t)out_tensor.numOfDetections;
 
     for (uint32_t i = 0u; i < num_of_detections; i++) {
 
